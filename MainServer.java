@@ -4,8 +4,8 @@ import java.net.*;
 class MainServer
 {
 	static volatile boolean active =true;
-	static Scanner serverinput=new Scanner(System.in);
-	static List<ClientIF> clients=new ArrayList<>();
+	static BufferedReader serverinput=new BufferedReader(new InputStreamReader(System.in));
+	static Set<ClientIF> clients=Collections.synchronizedSet(new HashSet<>());
 	public static void main(String[] args)
 	{
 		try
@@ -15,7 +15,7 @@ class MainServer
 			new Thread(()->{
 				try
 				{
-				if(serverinput.nextLine().equalsIgnoreCase("exit"))
+				if(serverinput.readLine().equalsIgnoreCase("exit"))
 				{
 					System.out.println("Server is Closed");
 					active=false;
@@ -40,7 +40,19 @@ class MainServer
 			}
 			catch(IOException e)
 			{
-				System.err.println("Socket Error"+e.getMessage());
+				if(!active)
+				{
+					
+					synchronized(clients)
+					{
+						for(ClientIF client:clients)
+						{
+							client.CloseConnection();
+							removeClient(client);
+						}
+					}
+				}
+				System.out.println("Socket Closed");
 				break;
 			}
 		}
@@ -50,6 +62,11 @@ class MainServer
 			System.err.println("Error Occured"+e.getMessage());
 		}
 	}
+public static void removeClient(ClientIF user)
+{
+	clients.remove(user);
+	System.out.println("User "+user.getName()+" Removed ");
+}
 }
 
-		
+	

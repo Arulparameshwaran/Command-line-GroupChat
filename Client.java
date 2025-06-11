@@ -3,55 +3,60 @@ import java.util.*;
 import java.net.*;
 class Client
 {
-	static Scanner input=new Scanner(System.in);
-
+	static BufferedReader in,input;
+	static PrintWriter out;
+	static Socket clientsocket;
 	public static void main(String[] args)
 	{
-		try(Socket clientsocket=new Socket("localhost",5000);
-			BufferedReader in=new BufferedReader(new InputStreamReader(clientsocket.getInputStream()));
-	   		PrintWriter out=new PrintWriter(clientsocket.getOutputStream(),true);	  
-		  	BufferedReader input=new BufferedReader(new InputStreamReader(System.in)); )
+		try
 		{
-	 
+			 clientsocket=new Socket("localhost",5000);
+			 in=new BufferedReader(new InputStreamReader(clientsocket.getInputStream()));
+		   	 out=new PrintWriter(clientsocket.getOutputStream(),true);	  
+			 input=new BufferedReader(new InputStreamReader(System.in)); 
 			String msg;
 			System.out.println("Connected to Server");
-			//Receiving Data from Client
+			//Receiving Data from Server
 			new Thread(()->{
-				while(true)
-				{
+				String servermsg;
+			while(true)
+			{
 				try
-				{
-				String servermsg=in.readLine();
-				if(servermsg!=null)
-				{
-					System.out.println(servermsg);
-				}
+				{	
+					servermsg=in.readLine();
+					if(servermsg!=null)
+					{
+						if(servermsg.equalsIgnoreCase("exit"))//If Server is going Down.., Client connection will Closed
+						{
+							closeSelf();
+							break;
+						}
+						System.out.println(servermsg);
+					}
+					
 				}
 				catch(IOException e)
 				{
-					System.out.println("Server not Responding "+e.getMessage());
+					System.out.println("Server Connection Lost :"+e.getMessage());
 					break;
+				
 				}
 			}
 			}).start();
+
 			//User Input Sending to Server
 			while(true)
 			{
 				msg=input.readLine();
 				if(msg!=null)
 				{
-					out.println(msg);
-				}
-			
-				if(msg.equalsIgnoreCase("exit"))
-				{
-					out.println(msg);
-					in.close();
-					out.close();
-					input.close();	
-					clientsocket.close();
-					System.out.println("Closedddd");
-					break;
+					if(msg.equalsIgnoreCase("exit"))
+					{
+						out.println(msg);
+						break;
+					}
+				out.println(msg);
+				
 				}
 			}
 					
@@ -61,7 +66,24 @@ class Client
 		}
 		catch(IOException e)
 		{
-			System.err.println("Server Error"+e.getMessage());
+			System.err.println("Server Error "+e.getMessage());
 		}
 	}
+	//To Exit From The Server ...
+private static void closeSelf()
+{
+	try
+	{
+		in.close();
+		out.close();
+		input.close();	
+		clientsocket.close();
+		System.out.println("Closed");
+	}
+	catch(IOException e)
+	{
+		System.out.println("Error Occured while Closing Client "+e.getMessage());
+	}
+		
+}
 }
