@@ -26,8 +26,9 @@ class Client
 					servermsg=in.readLine();
 					if(servermsg!=null)
 					{
-						if(servermsg.equalsIgnoreCase("exit"))//If Server is going Down.., Client connection will Closed
+						if(servermsg.equalsIgnoreCase("exit"))//Closing Client Socket at Client Side
 						{
+							System.out.println("Closing connection to Server...");
 							closeSelf();
 							break;
 						}

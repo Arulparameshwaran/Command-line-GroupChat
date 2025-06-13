@@ -30,21 +30,25 @@ public void run()
 				 name=input.readLine();
 				 output.println("Your Name "+name+" has been Added");
 				 System.out.println("User :"+name+" added");
-			 while(clientState)
+
+	//Reading Clients Message ..	
+	 	 while(clientState)
 			 {
 				 if(clientState!=false)
 				 {
 				 msg=input.readLine();
 				 if(msg!=null)
-				{	 System.out.println(name+": "+msg);
+				 {
 					 if(msg.equalsIgnoreCase("exit"))
 					 {
 					   this.CloseConnection();	
-				   	  MainServer.removeClient(this);	   
+				   	   MainServer.removeClient(this);	   
+					   MainServer.messageAll("User "+name+" left the Chat ",this);
 					   this.clientState=false;
-					   break;
-					   					  
+					   break;	   					  
 				         }
+					 System.out.println(name+": "+msg);
+					 MainServer.messageAll(name+": "+msg,this);
 				}
 				 }
 				 else
@@ -54,16 +58,18 @@ public void run()
 		}
 			catch(IOException e)
 			{
-				System.out.println("Client Socket Has Been Closed ");
+				System.out.println("Client Socket("+name+") Has Been Closed ");
 					
 			}
 	
 	}
+
+//Closing Client Socket at Server Side ..
 public void CloseConnection()
 {
 	try
 	{
-	System.out.println("Closing Connection");
+	output.println("Closing Connection");
 	this.clientState=false;
 	output.println("exit");
 	output.close();
@@ -74,6 +80,11 @@ public void CloseConnection()
 		System.out.println("Error Occured at Closing client Connection");
 		e.printStackTrace();
 	}
+}
+//Receiving Message or BroadCast
+public void message(String servermsg)
+{
+	output.println(servermsg);
 }
 }
 
