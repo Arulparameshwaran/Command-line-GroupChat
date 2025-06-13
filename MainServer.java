@@ -15,13 +15,16 @@ class MainServer
 			new Thread(()->{
 				try
 				{
-				if(serverinput.readLine().equalsIgnoreCase("exit"))
-				{
-					System.out.println("Server is Closed");
-					active=false;
-					server.close();	
-
-				}
+					while(true)
+					{
+						if(serverinput.readLine().equalsIgnoreCase("exit"))
+						{
+							System.out.println("Server is Shutting Down ");
+							active=false;
+							server.close();	
+							break;
+						}
+					}
 				}
 				catch(IOException e)
 				{
@@ -47,25 +50,43 @@ class MainServer
 					{
 						for(ClientIF client:clients)
 						{
+							client.message(" Server is Shutting Down ");
 							client.CloseConnection();
-							removeClient(client);
 						}
+						clients.clear();
 					}
 				}
-				System.out.println("Socket Closed");
 				break;
 			}
 		}
+		System.out.println("Server is Closed");
 		}
 		catch(IOException e)
 		{
 			System.err.println("Error Occured"+e.getMessage());
 		}
 	}
+
+	//Removing the User From the clients hashSet
 public static void removeClient(ClientIF user)
 {
 	clients.remove(user);
-	System.out.println("User "+user.getName()+" Removed ");
+	System.out.println("User "+user.getName()+" left the Chat ");
+}
+
+//BroadCast the Message ...
+public static void messageAll(String msg,ClientIF sender)
+{
+	synchronized(clients)
+	{
+		for(ClientIF client:clients)
+		{
+			if(client!=sender)
+			{
+				client.message(msg);
+			}
+		}
+	}	
 }
 }
 
