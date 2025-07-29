@@ -5,7 +5,7 @@ public class ClientIF implements Runnable
 {
 	private BufferedReader input;
 	private PrintWriter output;
-	private String msg,response,name;
+	private String msg,response,name,password;
 	Socket client;
 	private boolean clientState=true;
   public ClientIF(Socket csocket)
@@ -16,6 +16,10 @@ public class ClientIF implements Runnable
   	{
 		return name;
   	}
+  	public String getPassword()
+  	{
+		return password;
+	}
 public void run()
 	{
 
@@ -24,12 +28,49 @@ public void run()
 		{
 				 input=new BufferedReader(new InputStreamReader(client.getInputStream()));
 				 output=new PrintWriter(client.getOutputStream(),true);
-
 				 output.println("Welcome,User");
-				 output.println("Enter Your Name :");
-				 name=input.readLine();
-				 output.println("Your Name "+name+" has been Added");
-				 System.out.println("User :"+name+" added");
+				 boolean usr=true;
+				 while(usr)
+				 {
+					output.println("Enter Your Name :");
+					name=input.readLine();
+					output.println("Enter Your Password :");
+					password=input.readLine();
+					int index=MainServer.checkUser(this);	
+					switch(index)
+					{
+						case -1:
+						{
+							output.println("Error occured");
+							System.out.println(name +"Error occured in verification ");
+							usr=false;
+							break;
+						}	
+						case 1:
+						{
+							output.println("Welcome Back");
+							System.out.println(name+": Already Exists User");
+							MainServer.messageAll("User :"+name+" Joined",this);
+							usr=false;
+							break;
+						}
+						case -2:
+						{
+							output.println("Incorrect Password");
+							System.out.println(name+"Entered Incorrect Password");
+							break;
+						}
+						case 0:
+						{
+							output.println("Your Name has Been Added");
+							System.out.println("User "+name+" Created ");
+							MainServer.messageAll("New User : "+name+" Joined ",this);
+							usr=false;
+							break;
+						}
+					}
+				}
+				
 
 	//Reading Clients Message ..	
 	 	 while(clientState)
@@ -48,7 +89,7 @@ public void run()
 					   break;	   					  
 				         }
 					 System.out.println(name+": "+msg);
-					 MainServer.messageAll(name+": "+msg,this);
+					 MainServer.messageAll(msg,this);
 				}
 				 }
 				 else
