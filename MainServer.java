@@ -1,17 +1,21 @@
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.sql.*;
 class MainServer
 {
 	static volatile boolean active =true;
 	static BufferedReader serverinput=new BufferedReader(new InputStreamReader(System.in));
 	static Set<ClientIF> clients=Collections.synchronizedSet(new HashSet<>());
+	static DBActive DBIF=new DBActive();
 	public static void main(String[] args)
 	{
+		
 		try
 		(ServerSocket server=new ServerSocket(5000))
 		{	
 			System.out.println("Server is Started Running ");
+			
 			new Thread(()->{
 				try
 				{
@@ -83,11 +87,22 @@ public static void messageAll(String msg,ClientIF sender)
 		{
 			if(client!=sender)
 			{
-				client.message(msg);
+				client.message(sender.getName()+" : "+msg);
 			}
 		}
 	}	
+	DBIF.storeMsg(msg,sender.getName());
+}
+// Creating New User or Validating Already Existing User
+public static int checkUser(ClientIF user)
+{
+	String name=user.getName();
+	String password=user.getPassword();
+	System.out.println("Name :"+name+"\nPassword :"+password);
+	int index=DBIF.insertUser(name,password);
+	return index;
 }
 }
+
 
 	
