@@ -77,4 +77,40 @@ DBActive()
 			e.printStackTrace();
 		}
 	}
+	protected ArrayList<String> getOldMsgs(String name)
+	{
+		ArrayList<String> msgs=new ArrayList<>();
+		try
+		{
+			ResultSet res;
+			ps=dbcon.prepareStatement("select msgno from Messages where sender = ? AND msg like 'New User %' ");
+			ps.setString(1,name);
+			res=ps.executeQuery();
+			if(res.next())
+			{
+				int no=res.getInt("msgno");
+				System.out.println("Result set");
+				System.out.println("No :"+no);
+			
+				if(no!=0)
+				{
+				ps=dbcon.prepareStatement("select msg,sender from Messages where msgno > ?");
+				ps.setInt(1,no);
+				res=ps.executeQuery();
+				while(res.next())
+				{
+					msgs.add(res.getString("sender")+" : "+res.getString("msg"));
+				}
+				for(String na:msgs)
+					System.out.println(na);
+				return msgs;
+				}	
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return msgs;
+	}
 }

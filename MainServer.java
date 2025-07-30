@@ -102,6 +102,17 @@ public static int checkUser(ClientIF user)
 	int index=DBIF.insertUser(name,password);
 	return index;
 }
+
+//Retrieve OLD MESSAGES
+public static void retrieveMsg(ClientIF olduser)
+{
+	ArrayList<String> result=DBIF.getOldMsgs(olduser.getName());
+	for(String msgs:result)
+	{
+		olduser.message(msgs);
+	}
+}
+
 }
 
 
