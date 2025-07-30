@@ -51,6 +51,13 @@ public void run()
 							output.println("Welcome Back");
 							System.out.println(name+": Already Exists User");
 							MainServer.messageAll("User :"+name+" Joined",this);
+							output.println("Do you want to read old Messages (Y/N )?");
+							String s=input.readLine();
+							if(s.equalsIgnoreCase("Y"))
+							{
+								MainServer.retrieveMsg(this);
+								System.out.println("Messages retrived");
+							}
 							usr=false;
 							break;
 						}
@@ -70,6 +77,7 @@ public void run()
 						}
 					}
 				}
+				
 				
 
 	//Reading Clients Message ..	
