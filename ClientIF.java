@@ -50,7 +50,7 @@ public void run()
 						{
 							output.println("Welcome Back");
 							System.out.println(name+": Already Exists User");
-							MainServer.messageAll("User :"+name+" Joined",this);
+							MainServer.messageAll(name+" Joined",this);
 							output.println("Do you want to read old Messages (Y/N )?");
 							String s=input.readLine();
 							if(s.equalsIgnoreCase("Y"))
@@ -92,7 +92,7 @@ public void run()
 					 {
 					   this.CloseConnection();	
 				   	   MainServer.removeClient(this);	   
-					   MainServer.messageAll("User "+name+" left the Chat ",this);
+					   MainServer.messageAll(name+" left the Chat ",this);
 					   this.clientState=false;
 					   break;	   					  
 				         }

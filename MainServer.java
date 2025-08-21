@@ -107,6 +107,7 @@ public static int checkUser(ClientIF user)
 public static void retrieveMsg(ClientIF olduser)
 {
 	ArrayList<String> result=DBIF.getOldMsgs(olduser.getName());
+	System.out.println("Messages Retrieved for user :"+olduser.getName());
 	for(String msgs:result)
 	{
 		olduser.message(msgs);
